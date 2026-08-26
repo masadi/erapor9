@@ -1,0 +1,11 @@
+<?php
+
+namespace App\Models;
+
+use Laratrust\Models\Team as LaratrustTeam;
+
+class Team extends LaratrustTeam
+{
+    //protected $guarded = ['id'];
+    protected $guarded = [];
+}
