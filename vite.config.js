@@ -22,10 +22,22 @@ const getAppVersion = () => {
     const buildPadded = String(lastThreeDigits).padStart(3, '0')
     const version = `${major}.${dynamicMinor}.${buildPadded}`
 
-    // Simpan file version ke folder public Laravel (Cepat & Ringan)
-    const versionFilePath = path.resolve(__dirname, 'public/build-version.json')
-    fs.writeFileSync(versionFilePath, JSON.stringify({ version }))
+    // 🟢 Ambil nama author komit terakhir dari Git
+    const author = execSync('git log -1 --pretty=format:"%an"', { encoding: 'utf8' }).trim() || 'Direktorat SMP'
 
+    // 🟢 Ambil tanggal/waktu komit terakhir (Format ISO / Opsional)
+    const commitTime = execSync('git log -1 --pretty=format:"%cd" --date=format:"%d-%m-%Y %H:%M"', { encoding: 'utf8' }).trim()
+
+    // Simpan file version ke folder public Laravel
+    const versionFilePath = path.resolve(__dirname, 'public/build-version.json')
+    fs.writeFileSync(
+      versionFilePath, 
+      JSON.stringify({ 
+        version, 
+        author, 
+        commitTime 
+      })
+    )
     return version
   } catch (e) {
     return '1.0.000'
