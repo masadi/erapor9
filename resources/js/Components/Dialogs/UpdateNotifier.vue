@@ -11,7 +11,7 @@ const initialVersion = ref(
 )
 
 const newVersion = ref('')
-const buildAuthor = ref('Direktorat SMP')
+const buildAuthor = ref('')
 const buildTime = ref('')
 
 // Countdown auto-update (5 menit = 300 detik)
