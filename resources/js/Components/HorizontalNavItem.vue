@@ -88,54 +88,37 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div
-    v-if="item && item.name"
-    class="relative shrink-0"
-    :data-horizontal-menu="item.id"
-    @mouseenter="hasChildren && openDropdown()"
-    @mouseleave="hasChildren && closeDropdown()"
-  >
-    <Link
-      v-if="!hasChildren"
-      :href="item.href || '#'"
-      :class="[
-        'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-        isActive(item.href) ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-indigo-700'
-      ]"
-    >
+  <div v-if="item && item.name" class="relative shrink-0" :data-horizontal-menu="item.id"
+    @mouseenter="hasChildren && openDropdown()" @mouseleave="hasChildren && closeDropdown()">
+    <!-- Single Link (Tanpa Child) -->
+    <Link v-if="!hasChildren" :href="item.href || '#'" :class="[
+      'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors cursor-pointer',
+      isActive(item.href)
+        ? 'bg-indigo-600 text-white shadow-sm dark:bg-indigo-600 dark:text-white'
+        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-700 dark:hover:text-indigo-400'
+    ]">
       <component :is="$getIcon(item.icon || 'Circle')" class="h-4 w-4 shrink-0" />
       <span class="whitespace-nowrap">{{ item.name }}</span>
     </Link>
 
-    <button
-      v-else
-      type="button"
-      :aria-expanded="isOpen"
-      :aria-haspopup="true"
-      :class="[
-        'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-        isParentActive ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-100 hover:text-indigo-700'
-      ]"
-    >
+    <!-- Parent Button (Dengan Child/Dropdown) -->
+    <button v-else type="button" :aria-expanded="isOpen" :aria-haspopup="true" :class="[
+      'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors cursor-pointer',
+      isParentActive
+        ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/50'
+        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-indigo-700 dark:hover:text-indigo-400'
+    ]">
       <component :is="$getIcon(item.icon || 'Folder')" class="h-4 w-4 shrink-0" />
       <span class="whitespace-nowrap">{{ item.name }}</span>
-      <component :is="$getIcon(isOpen ? 'ChevronRight' : 'ChevronDown')" class="h-3.5 w-3.5" />
+      <component :is="$getIcon(isOpen ? 'ChevronRight' : 'ChevronDown')" class="h-3.5 w-3.5 opacity-70" />
     </button>
 
-    <div
-      v-show="isOpen"
-      :class="[
-        'absolute z-50 min-w-56 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl',
-        depth === 1 ? 'left-0 top-full mt-2' : 'left-full top-0 ml-1'
-      ]"
-      role="menu"
-    >
-      <HorizontalNavItem
-        v-for="child in item.children"
-        :key="child.id"
-        :item="child"
-        :depth="depth + 1"
-      />
+    <!-- Dropdown Container -->
+    <div v-show="isOpen" :class="[
+      'absolute z-50 min-w-56 rounded-xl border bg-white dark:bg-slate-900 p-1.5 shadow-xl border-slate-200 dark:border-slate-800 transition-colors',
+      depth === 1 ? 'left-0 top-full mt-2' : 'left-full top-0 ml-1'
+    ]" role="menu">
+      <HorizontalNavItem v-for="child in item.children" :key="child.id" :item="child" :depth="depth + 1" />
     </div>
   </div>
 </template>

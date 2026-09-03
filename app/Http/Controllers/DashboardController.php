@@ -38,10 +38,19 @@ class DashboardController extends Controller
                 $query->where('semester_id', $this->semesterId());
             },
         ])->withCount([
-            'ptk' => function ($query) {
-                $query->where('is_dapodik', 1)->whereDoesntHave('ptk_keluar', function ($q) {
-                    $q->where('semester_id', request()->semester_id);
+            'ptk as guru' => function ($query) {
+                $query->where('is_dapodik', 1);
+                $query->whereDoesntHave('ptk_keluar', function ($q) {
+                    $q->where('semester_id', $this->semesterId());
                 });
+                $query->whereIn('jenis_ptk_id', jenis_gtk('guru'));
+            },
+            'ptk as tendik' => function ($query) {
+                $query->where('is_dapodik', 1);
+                $query->whereDoesntHave('ptk_keluar', function ($q) {
+                    $q->where('semester_id', $this->semesterId());
+                });
+                $query->whereIn('jenis_ptk_id', jenis_gtk('tendik'));
             },
             'pd_aktif' => function ($query) use ($request) {
                 $query->where('semester_id', $this->semesterId())
@@ -49,23 +58,8 @@ class DashboardController extends Controller
                           $q->where('jenis_rombel', 1);
                       });
             },
-            'nilai_akhir' => function ($query) use ($request) {
-                $query->whereHas('pembelajaran', function ($q) use ($request) {
-                    $q->where('sekolah_id', $this->user()->sekolah_id)
-                      ->where('semester_id', $this->semesterId());
-                });
-            },
-            'cp' => function ($query) use ($request) {
-                $query->whereHas('pembelajaran', function ($q) use ($request) {
-                    $q->where('sekolah_id', $this->user()->sekolah_id)
-                      ->where('semester_id', $this->semesterId());
-                });
-            },
-            'nilai_projek' => function ($query) use ($request) {
-                $query->whereHas('anggota_rombel', function ($q) use ($request) {
-                    $q->where('sekolah_id', $this->user()->sekolah_id)
-                      ->where('semester_id', $this->semesterId());
-                })->whereNotNull('rencana_budaya_kerja_id');
+            'rombonganBelajar' => function ($query) use ($request) {
+                $query->where('semester_id', $this->semesterId());
             },
         ])->find($this->user()->sekolah_id);
 
@@ -74,72 +68,14 @@ class DashboardController extends Controller
             'semester_id' => $this->semesterId(),
         ], ['status' => 1]);
 
-        $tp = TujuanPembelajaran::where(function ($q) use ($request) {
-            $q->whereHas('cp', function ($qq) use ($request) {
-                $qq->whereHas('pembelajaran', function ($qqq) use ($request) {
-                    $qqq->where('sekolah_id', $this->user()->sekolah_id)
-                        ->where('semester_id', $this->semesterId());
-                });
-            })->orWhereHas('kd', function ($qq) use ($request) {
-                $qq->whereHas('pembelajaran', function ($qqq) use ($request) {
-                    $qqq->where('sekolah_id', $this->user()->sekolah_id)
-                        ->where('semester_id', $this->semesterId());
-                });
-            });
-        })->count();
-
         $data = [
             'stats' => [
-                'jumlahSekolah'    => $sekolah->ptk_count,
-                'jumlahGuruAktif'  => $sekolah->ptk_count,
-                'jumlahKelas'      => $sekolah->rombongan_belajar_count ?? 0,
-                'jumlahSiswaAktif' => $sekolah->pd_aktif_count,
+                'guru' => $sekolah->guru,
+                'tendik' => $sekolah->tendik,
+                'pd'      => $sekolah->pd_aktif_count,
+                'rombel' => $sekolah->rombongan_belajar_count,
             ],
             'dataLembaga' => [],
-            'rekap' => [
-                [
-                    'data'    => 'PTK',
-                    'jml'     => $sekolah->ptk_count,
-                    'icon'    => 'user-graduate',
-                    'variant' => 'info',
-                    'html'    => '',
-                ],
-                [
-                    'data'    => 'Peserta Didik',
-                    'jml'     => $sekolah->pd_aktif_count,
-                    'icon'    => 'children',
-                    'variant' => 'warning',
-                    'html'    => '',
-                ],
-                [
-                    'data'    => 'CP',
-                    'jml'     => $sekolah->cp_count,
-                    'icon'    => 'list-check',
-                    'variant' => 'success',
-                    'html'    => 'Jumlah Mata Pelajaran yang telah di input Deskripsi Capaian Pembelajaran',
-                ],
-                [
-                    'data'    => 'TP',
-                    'jml'     => $tp,
-                    'icon'    => 'spell-check',
-                    'variant' => 'error',
-                    'html'    => 'Jumlah Tujuan Pembelajaran yang telah di input oleh PTK',
-                ],
-                [
-                    'data'    => 'Nilai Akhir',
-                    'jml'     => $sekolah->nilai_akhir_count,
-                    'icon'    => 'list-check',
-                    'variant' => 'primary',
-                    'html'    => 'Jumlah Nilai Akhir yang siap dicetak',
-                ],
-                [
-                    'data'    => 'Nilai Projek',
-                    'jml'     => $sekolah->nilai_projek_count,
-                    'icon'    => 'list-check',
-                    'variant' => 'error',
-                    'html'    => 'Jumlah Peserta Didik yang telah dinilai P5',
-                ],
-            ],
             'app' => [
                 'app_name'        => config('app.name'),
                 'app_version'     => get_setting('app_version'),

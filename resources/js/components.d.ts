@@ -13,10 +13,14 @@ declare module 'vue' {
   export interface GlobalComponents {
     AdminLayout: typeof import('./Layouts/AdminLayout.vue')['default']
     ApplicationLogo: typeof import('./Components/ApplicationLogo.vue')['default']
+    Card: typeof import('./Components/Card.vue')['default']
     Checkbox: typeof import('./Components/Checkbox.vue')['default']
+    ConfirmDialog: typeof import('./Components/Dialogs/ConfirmDialog.vue')['default']
     DangerButton: typeof import('./Components/DangerButton.vue')['default']
     Dropdown: typeof import('./Components/Dropdown.vue')['default']
     DropdownLink: typeof import('./Components/DropdownLink.vue')['default']
+    Grid: typeof import('./Components/Grid.vue')['default']
+    GridCol: typeof import('./Components/GridCol.vue')['default']
     GuestLayout: typeof import('./Layouts/GuestLayout.vue')['default']
     Head: typeof import('@inertiajs/vue3')['Head']
     HorizontalNavItem: typeof import('./Components/HorizontalNavItem.vue')['default']
@@ -25,11 +29,13 @@ declare module 'vue' {
     Link: typeof import('@inertiajs/vue3')['Link']
     Modal: typeof import('./Components/Modal.vue')['default']
     NavLink: typeof import('./Components/NavLink.vue')['default']
+    NotificationDialog: typeof import('./Components/Dialogs/NotificationDialog.vue')['default']
     PrimaryButton: typeof import('./Components/PrimaryButton.vue')['default']
     ResponsiveNavLink: typeof import('./Components/ResponsiveNavLink.vue')['default']
     SecondaryButton: typeof import('./Components/SecondaryButton.vue')['default']
     SidebarNavItem: typeof import('./Components/SidebarNavItem.vue')['default']
     TextInput: typeof import('./Components/TextInput.vue')['default']
+    Toggle: typeof import('./Components/Toggle.vue')['default']
     UpdateNotifier: typeof import('./Components/Dialogs/UpdateNotifier.vue')['default']
   }
 }

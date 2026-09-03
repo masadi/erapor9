@@ -16,11 +16,11 @@ const getAppVersion = () => {
   try {
     const gitCommits = parseInt(execSync('git rev-list --count HEAD', { encoding: 'utf8' }).trim(), 10) || 0
     const totalCommits = gitCommits + 1
-    const major = 1
+    const major = 9
     const dynamicMinor = Math.floor(totalCommits / 1000)
     const lastThreeDigits = totalCommits % 1000
-    const buildPadded = String(lastThreeDigits).padStart(3, '0')
-    const version = `${major}.${dynamicMinor}.${buildPadded}`
+    //const buildPadded = String(lastThreeDigits).padStart(3, '0')
+    const version = `${major}.${dynamicMinor}.${lastThreeDigits}`
 
     // 🟢 Ambil nama author komit terakhir dari Git
     const author = execSync('git log -1 --pretty=format:"%an"', { encoding: 'utf8' }).trim() || 'Direktorat SMP'
@@ -40,7 +40,7 @@ const getAppVersion = () => {
     )
     return version
   } catch (e) {
-    return '1.0.000'
+    return '9.0.0'
   }
 }
 export default defineConfig({
